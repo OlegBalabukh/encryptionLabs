@@ -1,0 +1,139 @@
+<!Doctype html>
+<html>
+<head>
+  <title></title>
+  <meta charset="utf-8">
+</head>
+<body>
+  <div class = 'container'>
+    <h3>Повідомлення зашифроване шифром Цезара</h3>
+    <div>
+      <textarea rows="10" cols="90" id='input'></textarea>
+    </div>
+
+    <div>
+      <button id="btn">Дешифрувати</button>
+    </div>
+
+  <h3>Дешифроване повідомлення</h3>
+  <h4>Ключ зміщення: <span id="shift"></span></h4>
+  <div>
+    <textarea rows="10" cols="90" id='output'></textarea>    
+  </div>
+    
+  </div>
+  
+  
+
+</body>
+</html>
+
+
+<style type="text/css">
+
+  #btn {
+    margin-left: 40%;
+    padding:1%;
+  }
+
+  .container {
+    width: 650px;   
+    margin: 0 auto;
+  }
+
+  #shift {
+    background-color: yellow;
+  }
+</style>
+
+
+
+<script type="text/javascript">
+
+  var input = document.getElementById('input');
+  var output = document.getElementById('output');
+  var shift = document.getElementById('shift');
+
+  let btn = document.getElementById("btn");
+
+  btn.addEventListener("click", function() {
+
+    var encodedString = input.value;
+  
+  /*
+  var encodedString = "WBJ;EK,;QYHOFJE,HWF;OQ;WIQWQBED,QWDZQYECFB NQ;-IJEHOSQ-JQMWIDVJQKDJ-BQJ; QY DJKHOQJ;WJQ-JQZ L BEF ZQWDOJ;-D,QCEH QJ;WDQWZQ;EYQWFFHEWY; IQJEQ -J; HQ DYHOFJ-EDQEHQYHOFJWDWBOI-IQJ; QIY- DY QE.Q.-DZ-D,QM WAD II IQ-DQYHOFJEQIOIJ CIRQ NWCFB IQE.QJ; QBWJJ HQ-DYBKZ QY;WHB IQXWXXW, VIQYH-C WDQMWHQ HWQMEHAQEDQCWJ; CWJ-YWBQYHOFJWDWBOI-IQE.QFEBOWBF;WX J-YQY-F; HISQH Z L BEF ZQWDZQFKXB-I; ZQIEC M;WJQBWJ HQXOQJ; QFHKII-WDQ.H- ZH-Y;QAWI-IA-RQKDZ HIJWDZ-D,QE.QYHOFJE,HWF;OQWJQJ;-IQJ-C QJOF-YWBBOQYEDI-IJ ZQE.Q;WHZUMEDQHKB IQE.QJ;KCXTQI  SQ.EHQ NWCFB SQWK,KIJ QA HYA;E..IVYHOFJE,HWF;-YQMH--D,IQ-DQJ; QBWJJ HQY DJKHORQ Z,WHQWBBWDQFE QKI ZQIOIJ CWJQ-YQC";
+  */
+  // gets the most frequent character in the string
+  var getMax = function (str) {
+    var max = 0,
+    maxChar = '';
+
+    str.split('').forEach(function(char){
+      if(str.split(char).length > max) {
+        max = str.split(char).length;
+        maxChar = char;
+      }
+    });
+    return maxChar;
+  };
+
+  function decodeSaesar(encodedStr) {
+    var codeArr = encodedStr.split("");
+    var decodedArr = []; // result
+    var alphabet = [" ", ".", ",", ";", "-", "'", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"];
+
+    var index = alphabet.indexOf(getMax(encodedString)); // index of the most frequent character
+    var shiftLength = alphabet.slice(index).length;
+    var alphabetWithShift = alphabet.concat(alphabet.slice(0, shiftLength));
+
+    /* alphabetWithShift = [" ", ".", ",", ";", "-", "'", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", " ", ".", ",", ";", "-", "'", "A", "B", "C", "D"]; */
+
+    for (var i = 0; i < codeArr.length; i++) {
+      for (var j = 0; j < alphabetWithShift.length; j++) {
+        if (codeArr[i] === alphabetWithShift[j]) {
+          decodedArr.push(alphabetWithShift[j + shiftLength]);
+        }
+      }
+    }
+
+     shift.innerHTML = shiftLength;
+    output.innerHTML = decodedArr.join("");// return decodedArr.join(""); 
+  }
+
+  decodeSaesar(encodedString);
+
+  // Count all symbols
+  var codeArr = encodedString.split("");
+    var counts = {};
+    var compare = 0;
+    var mostFrequent;
+
+    (function(array){
+      for (var i = 0, len = array.length; i < len; i++) {
+        var item = array[i];
+
+        if(counts[item] === undefined){
+           counts[item] = 1;
+       }else{
+           counts[item] = counts[item] + 1;
+       }
+       if(counts[item] > compare){
+             compare = counts[item];
+             mostFrequent = codeArr[i];
+       }
+     }
+     console.log(counts);
+   })(codeArr);
+
+  });
+
+  /*
+
+  Although cryptography has a long and complex history, it wasn't until the 19th century that it developed anything more than ad hoc approaches to either encryption or cryptanalysis (the science of finding weaknesses in crypto systems). Examples of the latter include Charles Babbage's Crimean War era work on mathematical cryptanalysis of polyalphabetic ciphers, redeveloped and published somewhat later by the Prussian Friedrich Kasiski. Understanding of cryptography at this time typically consisted of hard-won rules of thumb; see, for example, Auguste Kerckhoffs' cryptographic writings in the latter 19th century. Edgar Allan Poe used systematic methods to solve ciphers in the 1840s.
+
+  https://en.wikipedia.org/wiki/History_of_cryptography
+
+  */  
+
+</script>
+

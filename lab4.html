@@ -1,0 +1,190 @@
+<!Doctype html>
+<html>
+<head>
+  <title></title>
+  <meta charset="utf-8">
+</head>
+<body>
+	<div class = 'container'>
+		<h3>Відкритий текст</h3>
+		<div><textarea rows="10" cols="90" id='input'></textarea></div>
+		<div> <button id="encrypt">Зашифрувати</button></div>
+
+		<h3>Повідомлення зашифроване шрифтом Віженера</h3>
+		<h4>Ключ: ***<span id="key">BALABUKH OLEG</span>***</h4>
+		<div><textarea rows="10" cols="90" id='output'></textarea></div>
+		<div><button id="decrypt">Дешифрувати</button></div>
+	</div>
+</body>
+</html>
+
+<style type="text/css">
+
+  #encrypt, #decrypt {
+    margin-left: 40%;
+    padding:1%;
+  }
+
+  .container {
+    width: 650px;   
+    margin: 0 auto;
+  }
+
+  #key {
+  	background-color: yellow;
+  }
+
+</style>
+
+
+<script type="text/javascript">
+
+	//var cipherKey = document.getElementById('key');
+	let encryptBtn = document.getElementById("encrypt");
+	let decryptBtn = document.getElementById("decrypt");
+	let keyword = "BALABUKH OLEG";
+
+	var VigenereCipher = {
+		_tabulaRecta: {
+			"A": "ABCDEFGHIJKLMNOPQRSTUVWXYZ '-,.;",
+			"B": "BCDEFGHIJKLMNOPQRSTUVWXYZ '-,.;A",
+			"C": "CDEFGHIJKLMNOPQRSTUVWXYZ '-,.;AB",
+			"D": "DEFGHIJKLMNOPQRSTUVWXYZ '-,.;ABC",
+			"E": "EFGHIJKLMNOPQRSTUVWXYZ '-,.;ABCD",
+			"F": "FGHIJKLMNOPQRSTUVWXYZ '-,.;ABCDE",
+			"G": "GHIJKLMNOPQRSTUVWXYZ '-,.;ABCDEF",
+			"H": "HIJKLMNOPQRSTUVWXYZ '-,.;ABCDEFG",
+			"I": "IJKLMNOPQRSTUVWXYZ '-,.;ABCDEFGH",
+			"J": "JKLMNOPQRSTUVWXYZ '-,.;ABCDEFGHI",
+			"K": "KLMNOPQRSTUVWXYZ '-,.;ABCDEFGHIJ",
+			"L": "LMNOPQRSTUVWXYZ '-,.;ABCDEFGHIJK",
+			"M": "MNOPQRSTUVWXYZ '-,.;ABCDEFGHIJKL",
+			"N": "NOPQRSTUVWXYZ '-,.;ABCDEFGHIJKLM",
+			"O": "OPQRSTUVWXYZ '-,.;ABCDEFGHIJKLMN",
+			"P": "PQRSTUVWXYZ '-,.;ABCDEFGHIJKLMNO",
+			"Q": "QRSTUVWXYZ '-,.;ABCDEFGHIJKLMNOP",
+			"R": "RSTUVWXYZ '-,.;ABCDEFGHIJKLMNOPQ",
+			"S": "STUVWXYZ '-,.;ABCDEFGHIJKLMNOPQR",
+			"T": "TUVWXYZ '-,.;ABCDEFGHIJKLMNOPQRS",
+			"U": "UVWXYZ '-,.;ABCDEFGHIJKLMNOPQRST",
+			"V": "VWXYZ '-,.;ABCDEFGHIJKLMNOPQRSTU",
+			"W": "WXYZ '-,.;ABCDEFGHIJKLMNOPQRSTUV",
+			"X": "XYZ '-,.;ABCDEFGHIJKLMNOPQRSTUVW",
+			"Y": "YZ '-,.;ABCDEFGHIJKLMNOPQRSTUVWX",
+			"Z": "Z '-,.;ABCDEFGHIJKLMNOPQRSTUVWXY",
+			" ": " '-,.;ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+			"'": "'-,.;ABCDEFGHIJKLMNOPQRSTUVWXYZ ",
+			"-": "-,.;ABCDEFGHIJKLMNOPQRSTUVWXYZ '",
+			",": ",.;ABCDEFGHIJKLMNOPQRSTUVWXYZ '-",
+			".": ".;ABCDEFGHIJKLMNOPQRSTUVWXYZ '-,",
+			";": ";ABCDEFGHIJKLMNOPQRSTUVWXYZ '-,."
+		},
+
+		encrypt: function(plainText, keyword) {
+
+			if (typeof(plainText) !== "string") {
+				return "invalid plainText. Must be string, not " + typeof(plainText);
+			}
+
+			if (typeof(keyword) !== "string") {
+				return "invalid keyword. Must be string, not " + typeof(keyword);
+			}
+
+			keyword = keyword.match(/[A-Z]/gi).join("");
+			var encryptedText = "";
+			var specialCharacterCount = 0;
+
+			for (var i = 0; i < plainText.length; i++) {
+				var keyLetter = (i - specialCharacterCount) % keyword.length;
+				var keywordIndex = VigenereCipher._tabulaRecta.A.indexOf(keyword[keyLetter]);
+
+				if (VigenereCipher._tabulaRecta[plainText[i]]) {
+					encryptedText += VigenereCipher._tabulaRecta[plainText[i]][keywordIndex];
+				} else {
+					encryptedText += plainText[i];
+					specialCharacterCount++;
+				}
+			}
+
+			return encryptedText;
+		},
+
+		decrypt: function(encryptedText, keyword) {
+
+			if (typeof(encryptedText) !== "string") {
+				return "invalid encryptedText. Must be string, not " + typeof(encryptedText);
+			}
+
+			if (typeof(keyword) !== "string") {
+				return "invalid keyword. Must be string, not " + typeof(keyword);
+			}
+
+			//encryptedText = encryptedText.toLowerCase();
+			keyword = keyword.match(/[A-Z]/gi).join("");//.toLowerCase();
+			var decryptedText = "";
+			var specialCharacterCount = 0;
+
+			for (var i = 0; i < encryptedText.length; i++) {
+				var keyLetter = (i - specialCharacterCount) % keyword.length;
+				var keyRow = VigenereCipher._tabulaRecta[keyword[keyLetter]];
+
+				if (keyRow.indexOf(encryptedText[i]) !== -1) {
+					decryptedText += VigenereCipher._tabulaRecta.A[keyRow.indexOf(encryptedText[i])];
+				} else {
+					decryptedText += encryptedText[i];
+					specialCharacterCount++;
+				}
+			}
+
+			return decryptedText;
+		}
+	};
+
+	var input = document.getElementById('input');
+	var output = document.getElementById('output');
+// console.log(VigenereCipher.encrypt(plainText, keyword));
+// console.log(VigenereCipher.decrypt(encryptedText, keyword));
+
+
+	encryptBtn.addEventListener("click", function() {				
+		var decryptedMessage = input.value;
+		output.value = VigenereCipher.encrypt(decryptedMessage, keyword);
+		output.innerHTML = output.value;
+
+
+		var codeArr = output.value.split("");
+		var counts = {};
+		var compare = 0;
+		var mostFrequent;
+
+		(function(array) {
+			for (var i = 0, len = array.length; i < len; i++) {
+				var item = array[i];
+
+				if (counts[item] === undefined) {
+					counts[item] = 1;
+				} else {
+					counts[item] = counts[item] + 1;
+				}
+
+				if (counts[item] > compare) {
+					compare = counts[item];
+					mostFrequent = codeArr[i];
+				}
+			}
+			console.log("СТАТИСТИЧНИЙ АНАЛІЗ ШТ ВІЖЕНЕРА", counts);
+		})(codeArr);
+
+
+
+
+	});
+
+	decryptBtn.addEventListener("click", function() {
+		var encryptedMessage = output.value;
+		input.value = VigenereCipher.decrypt(encryptedMessage, keyword);
+		input.innerHTML = input.value;
+	});
+
+	// https://stackoverflow.com/questions/1927593/cant-update-textarea-with-javascript-after-writing-to-it-manually
+</script>

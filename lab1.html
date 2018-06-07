@@ -1,0 +1,93 @@
+<!Doctype html>
+<html>
+<head>
+  <title></title>
+  <meta charset="utf-8">
+</head>
+<body>
+	<div class = 'container'>
+		<h3>Відкритий текст</h3>
+		<div><textarea rows="25" cols="90" id='input'></textarea></div>
+		<div> <button id="analyze">Аналізувати</button></div>
+	</div>
+</body>
+</html>
+
+<style type="text/css">
+	#analyze {
+		padding: 0.7%;
+	}
+</style>
+
+
+
+
+<script type="text/javascript">
+
+	let input = document.getElementById('input');
+	let btn = document.getElementById("analyze");
+
+	btn.addEventListener("click", function() {
+		let text = input.value;
+
+		console.log("ПОВТОРЕННЯ ОДНОГО СИМВОЛУ", sortNgrams(getNgrams(text, 1)));
+		console.log("ПОВТОРЕННЯ ДВОХ СИМВОЛІВ", sortNgrams(getNgrams(text, 2)));
+		console.log("ПОВТОРЕННЯ ТРЬОХ СИМВОЛІВ", sortNgrams(getNgrams(text, 3)));
+		console.log("ПОВТОРЕННЯ ЧОТИРЬОХ СИМВОЛІВ", sortNgrams(getNgrams(text, 4)));
+		console.log("ПОВТОРЕННЯ БІГРАМ І ТРИГРАМ", outputResults(text, 30));
+	});
+
+	function sortNgrams(ngrams) {
+		return Object.keys(ngrams).map(function(key) {
+			return {'ngram': key, 'freq':ngrams[key]};
+		}).sort(function(first, second) {
+            // If the frequency is the same favour larger ngrams
+			return second['freq'] - first['freq'];
+		}).map(function(ngram, index) {
+			ngram['index'] = index;
+			return ngram;
+		});
+	}
+
+	function merge(obj1,obj2) {
+		var obj3 = {};
+		for (var attrname in obj1) { obj3[attrname] = obj1[attrname]; }
+		for (var attrname in obj2) { obj3[attrname] = obj2[attrname]; }
+			return obj3;
+	}
+
+	function getNgrams(text, n) {
+		var ngrams = {};
+		var content = text
+            // Make sure that there is letter a period.
+            //.replace(/\.\s*/g, '_') 					
+            // Discard all digits.
+            .replace(/[0-9]/g, "")
+            //Discard all punctuation except for Apostrophe.
+            .replace(/[&\/\\#+()$~%":*?"↵<>{}\r\n|\r|\n]/g,'')
+            // Remove duplicate spaces for bigrams, trigrams, fourgrams.	
+            //.replace(/\s*/g, '')
+            //.toLowerCase();
+
+        for(var i = 0; i < content.length - (n-1); i++) {
+        	var token = content.substring(i, i + n);
+        	if (token in ngrams)
+        		ngrams[token] += 1;
+        	else
+        		ngrams[token] = 1;
+        }
+
+        return ngrams;
+    }
+
+    let outputResults = function(text, topN) {
+    	var biGrams = getNgrams(text, 2);
+    	var triGrams = getNgrams(text, 3);
+    	var ngrams = merge(biGrams, triGrams);
+    	var sortedNgrams = sortNgrams(ngrams);
+
+    	return sortedNgrams.slice(0, topN);
+    }
+
+</script>
+

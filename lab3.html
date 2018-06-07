@@ -1,0 +1,135 @@
+<!Doctype html>
+<html>
+<head>
+  <title></title>
+  <meta charset="utf-8">
+</head>
+<body>
+  <div class = 'container'>
+    <h3>Повідомлення зашифроване шифром прямої заміни</h3>
+    <div>
+      <textarea rows="10" cols="90" id='input'></textarea>
+    </div>
+
+    <div>
+      <button id="btn">Дешифрувати</button>
+    </div>
+
+  <h3>Дешифроване повідомлення</h3>
+  <h4>Алфавіт: ***<span id="alphabet"></span>***</h4>
+  <h4>Ключ: ***<span id="key"></span>***</h4>
+  <div>
+    <textarea rows="10" cols="90" id='output'></textarea>    
+  </div>    
+  </div>  
+
+</body>
+</html>
+
+
+<style type="text/css">
+
+  #btn {
+    margin-left: 40%;
+    padding:1%;
+  }
+
+  .container {
+    width: 650px;   
+    margin: 0 auto;
+  }
+
+  #key, #alphabet {
+    background-color: yellow;
+  }
+</style>
+
+
+<script type="text/javascript">
+
+  var input = document.getElementById('input');
+  var output = document.getElementById('output');
+  var cipherKey = document.getElementById('key');
+  var cipherAlphabet = document.getElementById('alphabet');
+  let btn = document.getElementById("btn");
+
+  btn.addEventListener("click", function() {
+    var encodedString = input.value;
+
+    // gets the most frequent character in the string
+    var getMax = function (str) {
+      var max = 0,
+      maxChar = '';
+
+      str.split('').forEach(function(char){
+        if(str.split(char).length > max) {
+          max = str.split(char).length;
+          maxChar = char;
+        }
+      });
+      return maxChar;
+    };
+
+    var codeArr = encodedString.split(""); // All symbols
+    var mostFrequentSymbol = getMax(encodedString);
+
+    for (var i = 0; i < codeArr.length; i++) {
+      if (codeArr[i] === mostFrequentSymbol) {
+        codeArr[i] = " ";
+      }
+    }
+    
+    console.log("ЗАМІНА 'B' НА ' '\n\n", codeArr.join(""));
+    var allWordsArr = codeArr.join("").split(" ");
+    //output.innerHTML = codeArr;
+    console.log(allWordsArr);
+
+
+    // count words
+    var counts = {};
+    var compare = 0;
+    var mostFrequent;
+
+    (function(array){
+      for (var i = 0, len = array.length; i < len; i++) {
+        var item = array[i];
+
+        if(counts[item] === undefined){
+           counts[item] = 1;
+       }else{
+           counts[item] = counts[item] + 1;
+       }
+       if(counts[item] > compare){
+             compare = counts[item];
+             mostFrequent = allWordsArr[i];
+       }
+     }
+     console.log(counts);
+   })(allWordsArr);  // or codeArr for count all symbols
+
+
+
+   function decodeCipher(encodedStr) {
+    var codeArr = encodedStr.split("");
+    var decodedArr = []; // result
+    var alphabet = " ,-.;ABCDEFGIJKLMNOPQRSTUVWYZ"; // without " ' H X "
+         var key = "BTRCSD EMGOKLIFPHQ'UWYX.,-VNA";
+
+    for (var i = 0; i < codeArr.length; i++) {
+      for (var j = 0; j < alphabet.length; j++) {
+        if (codeArr[i] === alphabet[j]) {
+          decodedArr.push(key[j]);
+        }
+      }
+    }
+
+    cipherAlphabet.innerHTML = alphabet;
+    cipherKey.innerHTML = key;
+    output.innerHTML = decodedArr.join("");
+  }
+
+  decodeCipher(encodedString);
+  }); 
+ 
+</script>
+
